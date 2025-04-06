@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { generateShortUrl } from '../../utils/shortenUrl';
 
 const urlDatabase = {};  
 
@@ -9,17 +8,16 @@ export async function POST(request) {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
 
-  const shortenedUrl = generateShortUrl(url);
-  
-  urlDatabase[shortenedUrl] = url;
+  const randomString = Math.random().toString(36).substring(2, 8);
+  urlDatabase[randomString] = url;
 
-  return NextResponse.json({ shortenedUrl });
+  return NextResponse.json({ shortenedUrl: `https://short-url-webapp.vercel.app/${randomString}` });
 }
 
 export async function GET(request) {
   const { pathname } = new URL(request.url);
-
-  const longUrl = urlDatabase[pathname];
+  const randomString = pathname.split('/')[2];
+  const longUrl = urlDatabase[randomString];
 
   if (longUrl) {
     return NextResponse.redirect(longUrl);

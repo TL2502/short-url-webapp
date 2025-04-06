@@ -1,0 +1,10 @@
+{
+    "redirects": [
+      {
+        "source": "/:randomString",
+        "destination": "/api/shorten/:randomString",
+        "permanent": false
+      }
+    ]
+  }
+  

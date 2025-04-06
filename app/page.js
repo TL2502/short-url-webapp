@@ -143,7 +143,6 @@ export default function Home() {
       if (response.data?.shortenedUrl) {
         setShortUrl(response.data.shortenedUrl);
         setImageUrl('/cat-one-paw.png');
-
         localStorage.setItem('shortUrl', response.data.shortenedUrl);
       } else {
         setError('Cannot shorten the URL');
