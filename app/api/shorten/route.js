@@ -25,15 +25,19 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
-  const { pathname } = new URL(req.url);
-  const shortUrlKey = pathname.split('/')[2];
-
-  const longUrl = urlDatabase[shortUrlKey];
-  console.log(longUrl)
+    const { pathname } = new URL(req.url);
+    const shortUrlKey = pathname.split('/')[2];
   
-  if (longUrl) {
-    return NextResponse.redirect(longUrl); 
-  } else {
-    return NextResponse.json({ error: 'URL not found' }, { status: 404 });
+    if (!shortUrlKey || !urlDatabase[shortUrlKey]) {
+      return NextResponse.json({ error: 'URL not found' }, { status: 404 });
+    }
+  
+    const longUrl = urlDatabase[shortUrlKey];
+    
+    if (!longUrl) {
+      return NextResponse.json({ error: 'URL not found' }, { status: 404 });
+    }
+  
+    return NextResponse.redirect(longUrl);
   }
-}
+  
