@@ -10,7 +10,7 @@ export async function POST(req) {
     try {
       new URL(url); 
     } catch (error) {
-      return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid URL format. Please check your input' }, { status: 400 });
     }
 
     const shortUrlKey = Math.random().toString(36).substring(2, 8); 

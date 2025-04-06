@@ -1,7 +1,7 @@
-// app/page.js
 'use client'
 
-import { useState } from 'react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
 
@@ -9,14 +9,19 @@ export default function Home() {
   const [url, setUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(''); 
+  const [error, setError] = useState('');
+  const [imageUrl, setImageUrl] = useState('/hunt-eyes-cat.png');
+  const [pawAnimation, setPawAnimation] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); 
+    setError('');
+    setPawAnimation(true);
+    setAnimationComplete(false);
 
-    if (!url) { 
+    if (!url) {
       setError('Please enter the URL');
       setLoading(false);
       return;
@@ -25,7 +30,8 @@ export default function Home() {
     try {
       const response = await axios.post('/api/shorten', { url });
       if (response.data?.shortUrl) {
-        setShortUrl(response.data.shortUrl); 
+        setShortUrl(response.data.shortUrl);
+        setImageUrl('/cat-one-paw.png');  // เปลี่ยนภาพเมื่อได้รับ shortUrl
       } else {
         setError('Cannot shorten the URL');
       }
@@ -37,9 +43,25 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (pawAnimation) {
+      setTimeout(() => {
+        setPawAnimation(false);
+        setAnimationComplete(true);
+        setImageUrl('/round-eyes-cat.png');
+      }, 2000);
+    }
+  }, [pawAnimation]);
   return (
     <Container>
-      <Title>LinkShorter</Title>
+      <StyledImage>
+        <Image
+          src={imageUrl}
+          alt="hunt eyes cat"
+          width={420}
+          height={300}
+        />
+      </StyledImage>
       <Form onSubmit={handleSubmit}>
         <Input
           type="url"
@@ -53,23 +75,32 @@ export default function Home() {
         </Button>
       </Form>
       {error && <Error>{error}</Error>}
-      {shortUrl && (
-        <Result>
-          <p>URL ที่ย่อแล้ว: <a href={shortUrl} target="_blank" rel="noopener noreferrer">{shortUrl}</a></p>
-        </Result>
-      )}
+
+      <ResultWrapper>
+        {pawAnimation && (
+          <PawImage>
+            <Image
+              src="/cat-paw.png"
+              alt="cat paw"
+              width={300}
+              height={300}
+              className="paw-animation"
+            />
+          </PawImage>
+        )}
+        {animationComplete && shortUrl && (
+          <Result>
+            <p>Your shortened link is ready</p>
+            <Link href={shortUrl} target="_blank" rel="noopener noreferrer">{shortUrl}</Link>
+          </Result>
+        )}
+      </ResultWrapper>
     </Container>
   );
 }
 
-const Title = styled.h1`
-  font-size: 48px;  
-  font-weight: bold;
-  color: black;
-  margin-bottom: 20px;
-`;
-
 const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;  
   align-items: center;
@@ -86,7 +117,7 @@ const Form = styled.form`
 `;
 
 const Input = styled.input`
-  width: 50%;
+  width: 80%;
   height: 60px;
   font-size: 24px;
   border-radius: 9999px;
@@ -101,7 +132,7 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  width: 10%;  
+  width: 150px;  
   padding: 10px 20px;
   font-size: 16px;
   background-color: #333;
@@ -115,15 +146,60 @@ const Button = styled.button`
   }
 `;
 
-const Result = styled.div`
+const StyledImage = styled.div`
+  display: flex;
+  justify-content: center;  
+  align-items: center;      
+`;
+
+const PawImage = styled.div`
+  position: absolute;
+  animation: movePaw 2s ease-in-out infinite;
+  width: 300px;  
+  height: 300px; 
+
+  @keyframes movePaw {
+    0% {
+      left: 10%;
+    }
+    50% {
+      left: 50%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+`;
+
+const ResultWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 20px;
-  font-size: 18px;
-  color: green;
+`;
+
+const Result = styled.div`
+  text-align: center;
+  margin-left: 10px;
+  font-size: 24px;
+  color: black;
   animation: fadeIn 1s ease-in-out;
   
   @keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }
+  }
+`;
+
+const Link = styled.a`
+  display: block;
+  margin-top: 10px;
+  font-size: 24px;
+  color: green; 
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 
