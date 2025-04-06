@@ -14,7 +14,7 @@ export async function POST(req) {
     }
 
     const shortUrlKey = Math.random().toString(36).substring(2, 8); 
-    const shortUrl = `https://short.ly/${shortUrlKey}`;
+    const shortUrl = `https://short-url-webapp.vercel.app/${shortUrlKey}`;
     
     urlDatabase[shortUrlKey] = url;
 
