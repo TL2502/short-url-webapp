@@ -33,12 +33,6 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# Ignore all .json files
-*.json
-
-# Ignore all .mjs files
-*.mjs
-
 # vercel
 .vercel
 
