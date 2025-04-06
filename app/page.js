@@ -31,7 +31,7 @@ export default function Home() {
       const response = await axios.post('/api/shorten', { url });
       if (response.data?.shortUrl) {
         setShortUrl(response.data.shortUrl);
-        setImageUrl('/cat-one-paw.png');  // เปลี่ยนภาพเมื่อได้รับ shortUrl
+        setImageUrl('/cat-one-paw.png');  
       } else {
         setError('Cannot shorten the URL');
       }
