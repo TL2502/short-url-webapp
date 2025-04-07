@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import axios from 'axios';
 
 const Container = styled.div`
   position: relative;
@@ -109,23 +108,39 @@ const Error = styled.div`
   color: red;
 `;
 
+type Url = {
+  id: string;
+  shortUrl: string;
+  originalUrl: string;
+};
+
 export default function Home() {
   const [url, setUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState('');
+  const [shortUrl, setShortUrl] = useState<Url | null>(null); // Updated to handle a single Url object
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [imageUrl, setImageUrl] = useState('/hunt-eyes-cat.png');
   const [pawAnimation, setPawAnimation] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
 
-  useEffect(() => {
-    const savedShortUrl = localStorage.getItem('shortUrl');
-    if (savedShortUrl) {
-      setShortUrl(savedShortUrl); 
+  const shortenUrl = (code: string) => 
+    `${process.env.NEXT_PUBLIC_BASE_URL}/${code}`;
+
+  const fetchUrls = async () => {
+    try {
+      const response = await fetch('/api/urls');
+      const data = await response.json();
+      setShortUrl(data); // Assuming the response is a single URL object
+    } catch (error) {
+      console.error('Error fetching URL', error);
     }
+  };
+
+  useEffect(() => {
+    fetchUrls();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -139,14 +154,14 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post('/api/shorten', { url });
-      if (response.data?.shortenedUrl) {
-        setShortUrl(response.data.shortenedUrl);
-        setImageUrl('/cat-one-paw.png');
-        localStorage.setItem('shortUrl', response.data.shortenedUrl);
-      } else {
-        setError('Cannot shorten the URL');
-      }
+      const response = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await response.json();
+      setShortUrl(data); // Assuming the response contains the shortened URL object
+      setUrl('');
     } catch (err) {
       console.error('Error shortening the URL', err);
       setError('An error occurred while shortening the URL');
@@ -168,13 +183,7 @@ export default function Home() {
 
   return (
     <Container>
-      <Image
-        src={imageUrl}
-        alt="hunt eyes cat"
-        width={420}
-        height={300}
-        priority
-      />
+      <Image src={imageUrl} alt="hunt eyes cat" width={420} height={300} priority />
       <Form onSubmit={handleSubmit}>
         <Input
           type="url"
@@ -184,7 +193,7 @@ export default function Home() {
           required
         />
         <Button type="submit" disabled={loading}>
-          {loading ? 'Sending...' : 'Send'}
+          {loading ? 'Shortening...' : 'Shorten'}
         </Button>
       </Form>
 
@@ -205,8 +214,13 @@ export default function Home() {
         {animationComplete && shortUrl && (
           <Result>
             <p>Your shortened link is ready</p>
-            <Link href={shortUrl} target="_blank" rel="noopener noreferrer">
-              {shortUrl}
+            <Link
+              key={shortUrl.id}
+              href={`/${shortUrl.shortUrl}`} 
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {shortenUrl(shortUrl.shortUrl)}
             </Link>
           </Result>
         )}
