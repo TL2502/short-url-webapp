@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation';
 import prisma from "../../lib/db";
 
-interface RedirectPageProps {
-  params: { shortUrl: string }; 
+interface PageProps {
+  params: { shortUrl: string };
 }
 
-export default async function RedirectPage({ params }: RedirectPageProps) {
-  const { shortUrl } = params;
+export default async function RedirectPage({ params }: PageProps) {
+  const { shortUrl } = await params;
 
   const url = await prisma.url.findUnique({
     where: { shortUrl: shortUrl },
@@ -16,5 +16,5 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
     return <div>404 - URL not found</div>;
   }
 
-  redirect(url.originalUrl); 
+  redirect(url.originalUrl);
 }
