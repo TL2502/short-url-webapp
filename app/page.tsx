@@ -116,21 +116,21 @@ type Url = {
 
 export default function Home() {
   const [url, setUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState<Url | null>(null); 
+  const [shortUrl, setShortUrl] = useState<Url | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [imageUrl, setImageUrl] = useState('/hunt-eyes-cat.png');
   const [pawAnimation, setPawAnimation] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
 
-  const shortenUrl = (code: string) => 
+  const shortenUrl = (code: string) =>
     `${process.env.NEXT_PUBLIC_BASE_URL}/${code}`;
 
   const fetchUrls = async () => {
     try {
       const response = await fetch('/api/urls');
       const data = await response.json();
-      setShortUrl(data); 
+      setShortUrl(data);
     } catch (error) {
       console.error('Error fetching URL', error);
     }
@@ -160,7 +160,7 @@ export default function Home() {
         body: JSON.stringify({ url }),
       });
       const data = await response.json();
-      setShortUrl(data); 
+      setShortUrl(data);
       setUrl('');
     } catch (err) {
       console.error('Error shortening the URL', err);
@@ -172,6 +172,8 @@ export default function Home() {
 
   useEffect(() => {
     if (pawAnimation) {
+      setImageUrl('/cat-one-paw.png');
+
       const timeout = setTimeout(() => {
         setPawAnimation(false);
         setAnimationComplete(true);
@@ -216,7 +218,7 @@ export default function Home() {
             <p>Your shortened link is ready</p>
             <Link
               key={shortUrl.id}
-              href={`/${shortUrl.shortUrl}`} 
+              href={`/${shortUrl.shortUrl}`}
               target="_blank"
               rel="noopener noreferrer"
             >
