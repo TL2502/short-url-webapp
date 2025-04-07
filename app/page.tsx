@@ -116,7 +116,7 @@ type Url = {
 
 export default function Home() {
   const [url, setUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState<Url | null>(null); // Updated to handle a single Url object
+  const [shortUrl, setShortUrl] = useState<Url | null>(null); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [imageUrl, setImageUrl] = useState('/hunt-eyes-cat.png');
@@ -130,7 +130,7 @@ export default function Home() {
     try {
       const response = await fetch('/api/urls');
       const data = await response.json();
-      setShortUrl(data); // Assuming the response is a single URL object
+      setShortUrl(data); 
     } catch (error) {
       console.error('Error fetching URL', error);
     }
@@ -160,7 +160,7 @@ export default function Home() {
         body: JSON.stringify({ url }),
       });
       const data = await response.json();
-      setShortUrl(data); // Assuming the response contains the shortened URL object
+      setShortUrl(data); 
       setUrl('');
     } catch (err) {
       console.error('Error shortening the URL', err);
