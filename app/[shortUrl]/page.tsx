@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { NextResponse } from 'next/server';  
 import prisma from "../../lib/db";
 
 interface RedirectPageProps {
@@ -15,6 +15,6 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
   if (!url) {
     return <div>404 - URL not found</div>;
   }
-
-  redirect(url.originalUrl); 
+  
+  return NextResponse.redirect(url.originalUrl); 
 }
